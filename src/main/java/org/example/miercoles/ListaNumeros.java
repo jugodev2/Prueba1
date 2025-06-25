@@ -1,4 +1,3 @@
-
 package org.example.miercoles;
 
 
@@ -18,7 +17,7 @@ public class ListaNumeros {
             System.out.println("3.- Mostrar todos los numeros de la lista ");
             System.out.println("4.- Calcular la suma de los numeros de la lista ");
             System.out.println("5.- Mostrar los numero primos de la lista");
-            System.out.println("6.- Agregar un numero a la lista ");
+            System.out.println("6.- Salir ");
             opcion = s.nextInt();
 
             switch (opcion) {
