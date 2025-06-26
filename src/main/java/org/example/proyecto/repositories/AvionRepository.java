@@ -1,5 +1,6 @@
 package org.example.proyecto.repositories;
 
+import org.example.proyecto.model.entities.Aeropuerto;
 import org.example.proyecto.model.entities.Avion;
 
 import java.util.ArrayList;
@@ -16,12 +17,14 @@ public class AvionRepository implements IRepositories<Avion>{
 
     @Override
     public List<Avion> listar() {
-        return List.of();
+        return this.avioness;
     }
 
     @Override
     public void insertar(Avion elemento) {
-
+        elemento.setId(Avion.getLastId());
+        Avion.setLastId(Aeropuerto.getLastId()+1);
+        this.avioness.add(elemento);
     }
 
     @Override

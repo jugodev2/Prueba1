@@ -21,7 +21,9 @@ public class VueloRepository implements IRepositories<Vuelo>{
 
     @Override
     public void insertar(Vuelo elemento) {
-
+        elemento.setId(Vuelo.getLastId());
+        Vuelo.setLastId(Vuelo.getLastId()+1);
+        this.vuelos.add(elemento);
     }
 
     @Override

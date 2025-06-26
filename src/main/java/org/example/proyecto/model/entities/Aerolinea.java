@@ -19,13 +19,13 @@ public class Aerolinea {
 
     }
 
-    public Aerolinea(LocalDate fechaFundacion, String pais, Estatus estatus, String iate, String nombre, Long id) {
-        this.fechaFundacion = fechaFundacion;
-        this.pais = pais;
-        this.estatus = estatus;
-        this.iate = iate;
-        this.nombre = nombre;
+    public Aerolinea(Long id, String nombre, String iate, Estatus estatus, String pais, LocalDate fechaFundacion) {
         this.id = id;
+        this.nombre = nombre;
+        this.iate = iate;
+        this.estatus = estatus;
+        this.pais = pais;
+        this.fechaFundacion = fechaFundacion;
     }
 
     public String getPais() {

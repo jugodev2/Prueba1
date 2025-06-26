@@ -47,11 +47,10 @@ public class AerolineaRepository implements IRepositories<Aerolinea> {
 
     @Override
     public void eliminar(Long id) {
-
         Optional<Aerolinea> aerolinea = obtenerPorId(id);
         if (aerolinea.isPresent()){
             this.aerolineas.remove(aerolinea.get());
-            System.out.println("AEROLINA ENCONTRADA EXITOSAMENTE");
+            System.out.println("AEROLINA ELIMINADA EXITOSAMENTE");
         }else {
             System.out.println("ERROR: AEROLINA NO ENCONTRADA");
         }
