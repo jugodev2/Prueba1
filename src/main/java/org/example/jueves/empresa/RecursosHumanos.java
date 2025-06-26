@@ -1,5 +1,7 @@
 package org.example.jueves.empresa;
 
+import java.util.List;
+
 public class RecursosHumanos extends EmpleadoBase{
     public RecursosHumanos(String nombre,double salario) {
         super(nombre, Departamento.RECURSOS_HUMANOS, salario);
@@ -10,4 +12,5 @@ public class RecursosHumanos extends EmpleadoBase{
         System.out.printf("La Lic: %s trabaja en el departamento de %s y su salario %s \n",
                 this.getNombre(),this.getDepartamento(),this.getSalario());
     }
+
 }

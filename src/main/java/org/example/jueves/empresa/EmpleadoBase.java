@@ -12,6 +12,9 @@ public abstract class EmpleadoBase implements Empleado {
         this.salario = salario;
     }
 
+    protected EmpleadoBase() {
+    }
+
     @Override
     public String getNombre() {
         return this.nombre;
@@ -26,6 +29,9 @@ public abstract class EmpleadoBase implements Empleado {
     public Departamento getDepartamento() {
         return this.departamento;
     }
+
+
+
 
     public abstract void mostrarDatos();
 }
