@@ -18,7 +18,7 @@ public class VueloRepository implements IRepositories<Vuelo>{
 
     @Override
     public List<Vuelo> listar() {
-        return List.of();
+        return vuelos;
     }
 
     @Override

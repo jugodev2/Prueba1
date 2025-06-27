@@ -2,6 +2,7 @@ package org.example.proyecto.services;
 
 import org.example.proyecto.DBFake;
 import org.example.proyecto.exceptions.FechaAnteriorException;
+import org.example.proyecto.exceptions.FechaPosteriorExcepcion;
 import org.example.proyecto.model.entities.Aeropuerto;
 import org.example.proyecto.model.entities.Avion;
 import org.example.proyecto.model.entities.Vuelo;
@@ -72,12 +73,12 @@ public class ServiciosVuelo implements IServices {
 
     @Override
     public void insertar() {
-        ServicioAvion servicioAvion = new ServicioAvion(this.db);
+        Vuelo vuelo = new Vuelo();
 
-        servicioAvion.listar();
         s.nextLine();
         String codigoVuelo = ValidacionesCadenas.validarCadenaVacia(s,
                 "INGRESA EL CODIGO DE VUELO");
+        vuelo.setCodigoVuelo(codigoVuelo);
 
         Avion avion = new Avion();
 
@@ -87,28 +88,30 @@ public class ServiciosVuelo implements IServices {
             //AVION
         if (avionOptional.isPresent()){
             avion = avionOptional.get();
+            vuelo.setAvion(avion);
 
             System.out.println("SELECCIONA EL ID DEL AEROPUERTO DESTINO");
             long aeropuertoID = s.nextLong();
             Optional<Aeropuerto> aeropuertoOptional = db.getAeropuertoRepository().obtenerPorId(aeropuertoID);
-
             Aeropuerto aeropuertoDestino = new Aeropuerto();
             //LUGAR DE DESTINO
             if (aeropuertoOptional.isPresent()){
                 aeropuertoDestino = aeropuertoOptional.get();
+                vuelo.setDestino(aeropuertoDestino);
 
                 System.out.println("SELECCIONA ID DEL AEROPUERTO ORIGEN");
                 long aeropuertoID2 = s.nextLong();
                 Optional<Aeropuerto> aeropuertoOptional2 = db.getAeropuertoRepository().obtenerPorId(aeropuertoID2);
-                Aeropuerto aeropuertoOrigen = null;
-
+                Aeropuerto aeropuertoOrigen = new Aeropuerto();
                 //LUGAR DE ORIGEN
                 if (aeropuertoOptional2.isPresent() ){
                     aeropuertoOrigen = aeropuertoOptional2.get();
+                    vuelo.setOrigen(aeropuertoOrigen);
                     //COMPARAR QUE NO SEA EL MISMO LUGAR
                     if (aeropuertoDestino.getId().equals(aeropuertoOrigen.getId())){
-                        System.out.println("ERRO, No se puede guardar un VUELO con mismo destino y origen");
+                        System.out.println("ERROR, No se puede guardar un VUELO con mismo destino y origen");
                     }else {
+                        s.nextLine();
                         LocalDate fechSalida = null;
                         do {
                             System.out.println("AGREGA LA FECHA DE SALIDA DEL VUELO (dd/mm/aaaa)");
@@ -118,17 +121,24 @@ public class ServiciosVuelo implements IServices {
                                 fechSalida = ValidacionFecha.validarFehaPosterior(fecha);
                             }catch (DateTimeParseException e){
                                 System.out.println("EL FORMATO DE LA FECHA NO ES VALIDO, DEBE SER dd/MM/yyyy");
-                            }catch (FechaAnteriorException e){
+                            }catch (FechaPosteriorExcepcion e){
                                 System.out.println(e.getMessage());
                             }
                         }while (fechSalida == null);
 
+                        vuelo.setFechaSalida(fechSalida);
                         Estatus estatus = ValidacionEstatus.validacionEstatus(s);
 
-                        Vuelo vueloSave = new Vuelo(null, codigoVuelo,
-                                avion, aeropuertoDestino, aeropuertoOrigen,
-                                estatus, fechSalida);
-                        db.getVueloRepository().insertar(vueloSave);
+                        vuelo.setEstatus(estatus);
+                        System.out.println("LLEGO AL FINAL");
+                        System.out.println(vuelo.getCodigoVuelo());
+                        System.out.println(vuelo.getAvion());
+                        System.out.println(vuelo.getDestino().getNombre());
+                        System.out.println(vuelo.getEstatus());
+                        System.out.println(vuelo.getFechaSalida());
+                        System.out.println(vuelo.getOrigen());
+
+                        db.getVueloRepository().insertar(vuelo);
                     }
 
                 }
@@ -172,14 +182,14 @@ public class ServiciosVuelo implements IServices {
 
             System.out.println("SELECCIONA EL ID DEL AVION QUE DESEA");
             long avionID = s.nextLong();
-            Optional<Avion> avionOptional = db.getAvionRepository().obtenerPorId(avionID);
+            Optional<Avion> avionOptional = this.db.getAvionRepository().obtenerPorId(avionID);
             //AVION
             if (avionOptional.isPresent()) {
                 avion = avionOptional.get();
 
                 System.out.println("SELECCIONA EL ID DEL AEROPUERTO DESTINO");
                 long aeropuertoID = s.nextLong();
-                Optional<Aeropuerto> aeropuertoOptional = db.getAeropuertoRepository().obtenerPorId(aeropuertoID);
+                Optional<Aeropuerto> aeropuertoOptional = this.db.getAeropuertoRepository().obtenerPorId(aeropuertoID);
 
                 Aeropuerto aeropuertoDestino = new Aeropuerto();
                 //LUGAR DE DESTINO
@@ -198,16 +208,16 @@ public class ServiciosVuelo implements IServices {
                         if (aeropuertoDestino.getId().equals(aeropuertoOrigen.getId())) {
                             System.out.println("ERROR, No se puede guardar un VUELO con mismo destino y origen");
                         } else {
+
                             LocalDate fechSalida = null;
                             do {
                                 System.out.println("AGREGA LA FECHA DE SALIDA DEL VUELO (dd/mm/aaaa)");
                                 String fecha = s.nextLine();
-
                                 try {
                                     fechSalida = ValidacionFecha.validarFehaPosterior(fecha);
                                 } catch (DateTimeParseException e) {
                                     System.out.println("EL FORMATO DE LA FECHA NO ES VALIDO, DEBE SER dd/MM/yyyy");
-                                } catch (FechaAnteriorException e) {
+                                } catch (FechaPosteriorExcepcion e) {
                                     System.out.println(e.getMessage());
                                 }
                             } while (fechSalida == null);
