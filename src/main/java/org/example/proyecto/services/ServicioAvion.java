@@ -32,7 +32,7 @@ public class ServicioAvion  implements IServices{
         int opcion;
         do {
             System.out.println("------------MENU----------");
-            System.out.println("1- Listar AVIONES");
+            System.out.println("1- LISTAR AVIONES");
             System.out.println("2- INSERTAR AVION");
             System.out.println("3- EDITAR AVION");
             System.out.println("4- ELIMINAR AVION");
@@ -63,7 +63,7 @@ public class ServicioAvion  implements IServices{
                             "Condion Modelo: " + a.getCodigoModelo() + "\n" +
                             "Capacidad: " + a.getCapacidad() + "\n" +
                             "Fecha Primer Vuelo: " + a.getFechaPrimerVuelo() + "\n" +
-                            "AeroLinea: " + a.getAerolinea().getNombre() + "\n" +
+                            "AeroLinea: " + a.getAerolinea() + "\n" +
                             "Estatus: " + a.getEstatus().getEstatusEnum() + "\n")
                     .collect(Collectors.joining("\n")));
         }
@@ -76,15 +76,9 @@ public class ServicioAvion  implements IServices{
         Long numRegistro = ValidacionesNumericas.validarLongPosi(s);
         String tipo = ValidacionesCadenas.validarCadenaVacia(s, "INGRESA EL TIPO");
         String codModelo = ValidacionesCadenas.validarCadenaVacia(s, "INGRESA EL CODIGO DE MODELO");
-//        System.out.println("INGRESA LA CAPACIDAD");
-//        int capacidad = s.nextInt();
+
         int capacidad = ValidacionesNumericas.validarIntPosi(s, "INGRESA LA CAPACIDAD");
-        //VALIDACION DE LA CAPACIDAD
-//        while (capacidad <= 0) {
-//            System.out.println("La capacidad debe ser un número positivo.");
-//            capacidad = s.nextInt();
-//        }
-//        s.nextLine();
+
         LocalDate fechaPrimerVuelo = null;
         do {
             System.out.println("AGREGA LA FECHA DE PRIMER VUELO DEL AVION (dd/mm/aaaa)");
@@ -114,86 +108,85 @@ public class ServicioAvion  implements IServices{
                     fechaPrimerVuelo, estatus, aerolinea);
             db.getAvionRepository().insertar(avionSave);
         }else {
-            System.out.println("NO SE AGREGO EL AVION: LA AEROLINEA NO EXISTE");
+            System.out.println("NO SE AGREGO EL AVION: LA AEROLINEA INGRESADA NO EXISTE");
         }
 
     }
 
     @Override
     public void actualizar() {
-        Avion avionDB = new Avion();
+        long avionID = ValidacionesNumericas.validarLongPosi(s);
+        Optional<Avion> optionalAvion = db.getAvionRepository().obtenerPorId(avionID);
+        if (optionalAvion.isPresent()){
 
-        System.out.println("INGRESA EL NUMERO DE REGISTRO DE VUELO");
-        Long numRegistro = s.nextLong();
-        s.nextLine();
-        avionDB.setNumeroRegistro(numRegistro);
-        String tipo = ValidacionesCadenas.validarCadenaVacia(s, "INGRESA EL TIPO");
-        avionDB.setTipo(tipo);
-        String codModelo = ValidacionesCadenas.validarCadenaVacia(s, "INGRESA EL CODIGO DE MODELO");
-        avionDB.setCodigoModelo(codModelo);
-        System.out.println("INGRESA LA CAPACIDAD");
-        int capacidad = s.nextInt();
+            Avion avionDB = optionalAvion.get();
 
-        while (capacidad <= 0) {
-            System.out.println("La capacidad debe ser un número positivo.");
-            capacidad = s.nextInt();
-        }
-        avionDB.setCapacidad(capacidad);
-        s.nextLine();
-        LocalDate fechaPrimerVuelo = null;
-        do {
-            System.out.println("AGREGA LA FECHA DE PRIMER VUELO DEL AVION (dd/mm/aaaa)");
-            String fecha = s.nextLine();
+            System.out.println("INGRESA EL NUMERO DE REGISTRO DE VUELO");
+            Long numRegistro = ValidacionesNumericas.validarLongPosi(s);
+            String tipo = ValidacionesCadenas.validarCadenaVacia(s, "INGRESA EL TIPO");
+            String codModelo = ValidacionesCadenas.validarCadenaVacia(s, "INGRESA EL CODIGO DE MODELO");
 
-            try {
-                fechaPrimerVuelo = ValidacionFecha.validarFehaAnterior(fecha);
-            }catch (DateTimeParseException e){
-                System.out.println("EL FORMATO DE LA FECHA NO ES VALIDO, DEBE SER dd/MM/yyyy");
-            }catch (FechaAnteriorException e){
-                System.out.println(e.getMessage());
-            }
-        }while (fechaPrimerVuelo == null);
-            avionDB.setFechaPrimerVuelo(fechaPrimerVuelo);
+            int capacidad = ValidacionesNumericas.validarIntPosi(s, "INGRESA LA CAPACIDAD");
+
+            LocalDate fechaPrimerVuelo = null;
+            do {
+                System.out.println("AGREGA LA FECHA DE PRIMER VUELO DEL AVION (dd/mm/aaaa)");
+                String fecha = s.nextLine();
+
+                try {
+                    fechaPrimerVuelo = ValidacionFecha.validarFehaAnterior(fecha);
+                }catch (DateTimeParseException e){
+                    System.out.println("EL FORMATO DE LA FECHA NO ES VALIDO, DEBE SER dd/MM/yyyy");
+                }catch (FechaAnteriorException e){
+                    System.out.println(e.getMessage());
+                }
+            }while (fechaPrimerVuelo == null);
+
             Estatus estatus = ValidacionEstatus.validacionEstatus(s);
-            avionDB.setEstatus(estatus);
-
+            /// OBTENER AEROLINEA
             System.out.println("SELECCIONA EL ID DE LA AEROLINEA");
-            long aeroID = s.nextLong();
+            long aeroID = ValidacionesNumericas.validarLongPosi(s);
             Optional<Aerolinea> aerolineaOptional = this.db.getAerolineaRepository().obtenerPorId(aeroID);
-            Aerolinea aerolinea = new Aerolinea();
             if (aerolineaOptional.isPresent()){
-                System.out.println("Entro alOptional");
-                aerolinea = aerolineaOptional.get();
+                Aerolinea aerolinea = aerolineaOptional.get();
+
+                avionDB.setNumeroRegistro(numRegistro);
+                avionDB.setTipo(tipo);
+                avionDB.setCodigoModelo(codModelo);
+                avionDB.setCapacidad(capacidad);
+                avionDB.setFechaPrimerVuelo(fechaPrimerVuelo);
                 avionDB.setAerolinea(aerolinea);
 
                 db.getAvionRepository().editor(avionDB);
             }else {
-                System.out.println("ERROR, AEROLINEA NO ENCONTRADA");
+                System.out.println("NO SE AGREGO EL AVION: LA AEROLINEA DIGITALIZADA NO EXISTE");
             }
-
+        }else {
+            System.out.println("EL AVION NO EXISTE, ID NO RECONOCIDO");
+        }
     }
 
     @Override
     public void eliminar() {
-//        listar();
-//        System.out.println("INGRESA EL ID DEL AVION");
-//        while (!s.hasNextLong()){
-//            System.out.println("ENTRADA INVALIDA, SOLO SE PERMITEN ENTEROS");
-//            s.next();
-//            System.out.println("INGRESA EL ID DE LA AEROLINEA: ");
-//        }
-//        long id = s.nextLong();
+
         long id = ValidacionesNumericas.validarLongPosi(s);
+        //SE VALIDA LA EXISTENCIA DEL AVION
+        Optional<Avion> avionOptional = db.getAvionRepository().obtenerPorId(id);
+        if (avionOptional.isPresent()){
+            Avion avion = avionOptional.get();
 
-        boolean vuelosExistentes = db.getVueloRepository().listar()
-                .stream()
-                .anyMatch(vl -> (Objects.equals(vl.getDestino().getId(), id)
-                        || Objects.equals(vl.getOrigen().getId(), id)));
+            boolean aerolinaExistente = db.getAerolineaRepository().listar()
+                    .stream()
+                    .anyMatch(ae -> (Objects.equals(ae.getId(), avion.getAerolinea().getId())));
 
-        if (vuelosExistentes) {
-            System.out.println("NO SE PUEDE ELIMINAR EL AVION YA QUE TIENE AEROLINEAS RELACIONADOS");
+            if (aerolinaExistente) {
+                System.out.println("NO SE PUEDE ELIMINAR EL AVION YA QUE TIENE AEROLINEAS RELACIONADOS");
+            }else {
+                db.getAeropuertoRepository().eliminar(id);
+            }
         }else {
-            db.getAeropuertoRepository().eliminar(id);
+            System.out.println("AVION NO ENCONTRADO");
         }
+
     }
 }

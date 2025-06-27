@@ -3,10 +3,12 @@ package org.example.proyecto.services;
 import org.example.proyecto.DBFake;
 import org.example.proyecto.exceptions.FechaAnteriorException;
 import org.example.proyecto.model.entities.Aerolinea;
+import org.example.proyecto.model.entities.Avion;
 import org.example.proyecto.model.enums.Estatus;
 import org.example.proyecto.utils.ValidacionEstatus;
 import org.example.proyecto.utils.ValidacionFecha;
 import org.example.proyecto.utils.ValidacionesCadenas;
+import org.example.proyecto.utils.ValidacionesNumericas;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
@@ -97,31 +99,20 @@ public class ServicioAerolinea implements IServices{
 
         Aerolinea aerolinea = new Aerolinea(null, nombre, iate, estatus, pais, fechaFundacion);
         db.getAerolineaRepository().insertar(aerolinea);
-
     }
 
     @Override
     public void actualizar() {
-        listar();
-        System.out.println("INGRESA EL ID DE LA AEROLINEA");
-        while (!s.hasNextLong()){
-            System.out.println("ENTRADA INVALIDA, SOLO SE PERMITEN ENTEROS");
-            s.next();
-            System.out.println("INGRESA EL ID DE LA AEROLINEA: ");
-        }
-        long id = s.nextLong();
-        Optional<Aerolinea> aerolineaOptional = db.getAerolineaRepository().obtenerPorId(id);
-        if (aerolineaOptional.isPresent()) {
-            s.nextLine();
-
+        System.out.println("INGRESE EL ID DE LA AEROLINEA A ACTUALIZAR");
+        long idAero = ValidacionesNumericas.validarLongPosi(s);
+        Optional<Aerolinea> aerolineaOptional = db.getAerolineaRepository().obtenerPorId(idAero);
+        if (aerolineaOptional.isPresent()){
             Aerolinea aerolineaDB = aerolineaOptional.get();
-
+            s.nextLine();
             String nombre = ValidacionesCadenas.validarCadenaVacia(s, "INGRESA EL NOMBRE DE LA AEROLINEA");
             String iate = ValidacionesCadenas.validarCadenaVacia(s, "INGRESA LA IATA DE LA AEROLINEA");
             String pais = ValidacionesCadenas.validarCadenaVacia(s, "INGRESA EL NOMBRE DEL PAIS");
-            aerolineaDB.setNombre(nombre);
-            aerolineaDB.setIate(iate);
-            aerolineaDB.setPais(pais);
+
             LocalDate fechaFundacion = null;
 
             do {
@@ -136,40 +127,44 @@ public class ServicioAerolinea implements IServices{
                     System.out.println(e.getMessage());
                 }
             }while (fechaFundacion == null);
-            aerolineaDB.setFechaFundacion(fechaFundacion);
 
             Estatus estatus = ValidacionEstatus.validacionEstatus(s);
+
+            aerolineaDB.setNombre(nombre);
+            aerolineaDB.setIate(iate);
+            aerolineaDB.setPais(pais);
+            aerolineaDB.setFechaFundacion(fechaFundacion);
             aerolineaDB.setEstatus(estatus);
 
             db.getAerolineaRepository().editor(aerolineaDB);
 
         } else {
-            System.out.println("ERROR, AEROLINEA NO ENCONTRADA");
+            System.out.println("LA AEROLINEA NO EXISTE");
         }
     }
 
     @Override
     public void eliminar() {
-        listar();
-        System.out.println("INGRESA EL ID DE LA AEROLINEA");
-        while (!s.hasNextLong()){
-            System.out.println("ENTRADA INVALIDA, SOLO SE PERMITEN ENTEROS");
-            s.next();
-            System.out.println("INGRESA EL ID DE LA AEROLINEA: ");
-        }
-        long id = s.nextLong();
 
-        //VALIDAR QUE NO EXISTAN AVIONES DENTRO DE ESA AEROLINEA
-        boolean avionesRelacionados = db.getAvionRepository().listar()
-                .stream()
-                .anyMatch(av -> Objects.equals(av.getAerolinea().getId(), id));
+        long id = ValidacionesNumericas.validarLongPosi(s);
+        //SE VALIDA LA EXISTENCIA DEL AVION
+        Optional<Aerolinea> aerolineaOptional = db.getAerolineaRepository().obtenerPorId(id);
+        if (aerolineaOptional.isPresent()){
+            Aerolinea aerolinea = aerolineaOptional.get();
 
-        if (avionesRelacionados) {
-            System.out.println("NO SE PUEDE ELIMINAR LA AEROLINEA YA QUE TIENE REGISTROS SELECCIONADOS");
+            //VALIDAR QUE NO EXISTAN AVIONES DENTRO DE ESA AEROLINEA
+            boolean avionesRelacionados = db.getAvionRepository().listar()
+                    .stream()
+                    .anyMatch(av -> Objects.equals(av.getAerolinea().getId(), aerolinea.getId()));
+
+            if (avionesRelacionados) {
+                System.out.println("NO SE PUEDE ELIMINAR LA AEROLINEA YA QUE AVIONES RELACIONADOS");
+            }else {
+                db.getAerolineaRepository().eliminar(aerolinea.getId());
+            }
+
         }else {
-            db.getAerolineaRepository().eliminar(id);
-            System.out.println("AEROLINEA ELIMINADA EXITOSAMENTE");
+            System.out.println("AEROLINEA NO ENCONTRADA");
         }
-
     }
 }
