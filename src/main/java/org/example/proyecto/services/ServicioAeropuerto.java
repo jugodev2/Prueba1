@@ -5,6 +5,7 @@ import org.example.proyecto.model.entities.Aeropuerto;
 import org.example.proyecto.model.enums.Estatus;
 import org.example.proyecto.utils.ValidacionEstatus;
 import org.example.proyecto.utils.ValidacionesCadenas;
+import org.example.proyecto.utils.ValidacionesNumericas;
 ;
 import java.util.List;
 import java.util.Objects;
@@ -80,30 +81,29 @@ public class ServicioAeropuerto implements IServices {
 
     @Override
     public void actualizar() {
-        listar();
-        System.out.println("INGRESA EL ID DEL AEROPUERTO: ");
-        while (!s.hasNextLong()){
-            System.out.println("ENTRADA INVALIDA, SOLO SE PERMITEN ENTEROS");
-            s.next();
-            System.out.println("INGRESA EL ID DEL AEROPUERTO: ");
-        }
-        long id = s.nextLong();
+        //System.out.println("INGRESA EL ID DEL : ");
+//        while (!s.hasNextLong()){
+//            System.out.println("ENTRADA INVALIDA, SOLO SE PERMITEN ENTEROS");
+//            s.next();
+//            System.out.println("INGRESA EL ID DEL AEROPUERTO: ");
+//        }
+        //long id = s.nextLong();
+        //listar();
+        long id = ValidacionesNumericas.validarId(s, "AEROPUERTO");
         Optional<Aeropuerto> aeropuertoOptional = db.getAeropuertoRepository().obtenerPorId(id);
         if (aeropuertoOptional.isPresent()) {
             s.nextLine();
-
         Aeropuerto aeropuertoDB = aeropuertoOptional.get();
-
         String nombre = ValidacionesCadenas.validarCadenaVacia(s, "INGRESA EL NOMBRE DEL AEROPUERTO");
         String latitud = ValidacionesCadenas.validarCadenaVacia(s, "INGRESA LA LATITUD");
         String longitud = ValidacionesCadenas.validarCadenaVacia(s, "INGRESA LA LONGITUD");
         String pais = ValidacionesCadenas.validarCadenaVacia(s, "INGRESA EL NOMBRE DEL PAIS");
+        Estatus estatus = ValidacionEstatus.validacionEstatus(s);
+
         aeropuertoDB.setNombre(nombre);
         aeropuertoDB.setLatitud(latitud);
         aeropuertoDB.setLongitud(longitud);
         aeropuertoDB.setPais(pais);
-        Estatus estatus = ValidacionEstatus.validacionEstatus(s);
-
         aeropuertoDB.setEstatus(estatus);
 
         db.getAeropuertoRepository().editor(aeropuertoDB);
@@ -115,24 +115,16 @@ public class ServicioAeropuerto implements IServices {
 
     @Override
     public void eliminar() {
-            listar();
-            System.out.println("INGRESA EL ID DE LA AEROPUERTO");
-            while (!s.hasNextLong()){
-                System.out.println("ENTRADA INVALIDA, SOLO SE PERMITEN ENTEROS");
-                s.next();
-                System.out.println("INGRESA EL ID DE LA AEROLINEA: ");
-            }
-            long id = s.nextLong();
+        listar();
+        long id = ValidacionesNumericas.validarId(s, "AEROPUERTO");
 
-            boolean aerolineaVinculada = db.getAerolineaRepository().listar()
+            boolean vuelosVinlados = db.getVueloRepository().listar()
                     .stream()
                     .anyMatch(al -> (Objects.equals(al.getId(), id)));
-
-            if (aerolineaVinculada) {
-                System.out.println("NO SE PUEDE ELIMINAR EL AVION YA QUE TIENE VUELOS RELACIONADOS");
+            if (vuelosVinlados) {
+                System.out.println("NO SE PUEDE ELIMINAR EL AEROPERTO YA QUE TIENE VUELOS ASIGNADOS");
             }else {
                 db.getAeropuertoRepository().eliminar(id);
-                System.out.println("AEROPUERTO ELIMINADA EXITOSAMENTE");
             }
     }
 }

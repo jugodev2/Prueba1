@@ -52,6 +52,7 @@ public class AeropuertoRepository implements IRepositories<Aeropuerto> {
         Optional<Aeropuerto> aeropuerto = obtenerPorId(id);
         if (aeropuerto.isPresent()){
             this.aeropuertos.remove(aeropuerto.get());
+            System.out.println("AEROPUERTO ELIMINADO EXITOSAMENTE");
         }else {
             System.out.println("ERROR: AEROPUERTO NO ENCONTRADA");
         }

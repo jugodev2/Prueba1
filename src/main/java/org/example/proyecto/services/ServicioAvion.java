@@ -8,6 +8,7 @@ import org.example.proyecto.model.enums.Estatus;
 import org.example.proyecto.utils.ValidacionEstatus;
 import org.example.proyecto.utils.ValidacionFecha;
 import org.example.proyecto.utils.ValidacionesCadenas;
+import org.example.proyecto.utils.ValidacionesNumericas;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
@@ -107,13 +108,13 @@ public class ServicioAvion  implements IServices{
         }while (fechaPrimerVuelo == null);
 
         Estatus estatus = ValidacionEstatus.validacionEstatus(s);
-
+        /// AEROLINEA
         System.out.println("SELECCIONA EL ID DE LA AEROLINEA");
-        long aeroID = s.nextLong();
+        long aeroID = ValidacionesNumericas.validarId(s,"AEROLINEA");
+        //long aeroID = s.nextLong();
         Optional<Aerolinea> aerolineaOptional = this.db.getAerolineaRepository().obtenerPorId(aeroID);
-        Aerolinea aerolinea = new Aerolinea();
+        Aerolinea aerolinea;
         if (aerolineaOptional.isPresent()){
-            System.out.println("Entro alOptional");
             aerolinea = aerolineaOptional.get();
 
             Avion avionSave = new Avion(null, numRegistro,
@@ -121,7 +122,7 @@ public class ServicioAvion  implements IServices{
                     fechaPrimerVuelo, estatus, aerolinea);
             db.getAvionRepository().insertar(avionSave);
         }else {
-            System.out.println("No se puede INSERTAR, la aerolinea no EXISTE");
+            System.out.println("NO SE PUDO AGREGAR LA AEROLINEA, ESTA NO EXISTE");
         }
 
     }

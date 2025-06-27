@@ -14,7 +14,6 @@ import org.example.proyecto.utils.ValidacionesCadenas;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Scanner;
 import java.util.stream.Collectors;
@@ -34,7 +33,7 @@ public class ServiciosVuelo implements IServices {
         int opcion;
         do {
             System.out.println("------------MENU----------");
-            System.out.println("1- Listar VUELO");
+            System.out.println("1- LISTAR VUELO");
             System.out.println("2- INSERTAR VUELO");
             System.out.println("3- EDITAR VUELO");
             System.out.println("4- ELIMINAR VUELO");
