@@ -99,9 +99,8 @@ public class ServicioAvion  implements IServices{
         long aeroID = ValidacionesNumericas.validarLongPosi(s);
         //long aeroID = s.nextLong();
         Optional<Aerolinea> aerolineaOptional = this.db.getAerolineaRepository().obtenerPorId(aeroID);
-        Aerolinea aerolinea;
         if (aerolineaOptional.isPresent()){
-            aerolinea = aerolineaOptional.get();
+            Aerolinea aerolinea = aerolineaOptional.get();
 
             Avion avionSave = new Avion(null, numRegistro,
                     tipo, codModelo, capacidad,
@@ -115,6 +114,7 @@ public class ServicioAvion  implements IServices{
 
     @Override
     public void actualizar() {
+        System.out.println("INGRESA EL ID DEL AVION A MODIFICAR");
         long avionID = ValidacionesNumericas.validarLongPosi(s);
         Optional<Avion> optionalAvion = db.getAvionRepository().obtenerPorId(avionID);
         if (optionalAvion.isPresent()){
@@ -132,7 +132,6 @@ public class ServicioAvion  implements IServices{
             do {
                 System.out.println("AGREGA LA FECHA DE PRIMER VUELO DEL AVION (dd/mm/aaaa)");
                 String fecha = s.nextLine();
-
                 try {
                     fechaPrimerVuelo = ValidacionFecha.validarFehaAnterior(fecha);
                 }catch (DateTimeParseException e){
@@ -168,9 +167,9 @@ public class ServicioAvion  implements IServices{
 
     @Override
     public void eliminar() {
-
+        System.out.println("INGRESA EL AVION A ELIMINAR");
         long id = ValidacionesNumericas.validarLongPosi(s);
-        //SE VALIDA LA EXISTENCIA DEL AVION
+
         Optional<Avion> avionOptional = db.getAvionRepository().obtenerPorId(id);
         if (avionOptional.isPresent()){
             Avion avion = avionOptional.get();

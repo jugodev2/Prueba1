@@ -13,11 +13,11 @@ public class ValidacionesNumericas {
                 if (id > 0) {
                     return id;
                 } else {
-                    System.out.println("EL ID DEBE SER MAYOR A CERO.");
+                    System.out.println("LA ENTRADA DEBE SER MAYOR A CERO.");
                 }
             } else {
                 s.next();
-                System.out.println("ERROR, EL ID DEBE SER UN ENTERO");
+                System.out.println("ERROR, LA ENTRADA DEBE SER UN ENTERO");
 
             }
 

@@ -108,7 +108,6 @@ public class ServicioAerolinea implements IServices{
         Optional<Aerolinea> aerolineaOptional = db.getAerolineaRepository().obtenerPorId(idAero);
         if (aerolineaOptional.isPresent()){
             Aerolinea aerolineaDB = aerolineaOptional.get();
-            s.nextLine();
             String nombre = ValidacionesCadenas.validarCadenaVacia(s, "INGRESA EL NOMBRE DE LA AEROLINEA");
             String iate = ValidacionesCadenas.validarCadenaVacia(s, "INGRESA LA IATA DE LA AEROLINEA");
             String pais = ValidacionesCadenas.validarCadenaVacia(s, "INGRESA EL NOMBRE DEL PAIS");
@@ -137,7 +136,6 @@ public class ServicioAerolinea implements IServices{
             aerolineaDB.setEstatus(estatus);
 
             db.getAerolineaRepository().editor(aerolineaDB);
-
         } else {
             System.out.println("LA AEROLINEA NO EXISTE");
         }
@@ -145,7 +143,7 @@ public class ServicioAerolinea implements IServices{
 
     @Override
     public void eliminar() {
-
+        System.out.println("INGRESE EL ID DE LA AEROLINEA A ELIMINAR");
         long id = ValidacionesNumericas.validarLongPosi(s);
         //SE VALIDA LA EXISTENCIA DEL AVION
         Optional<Aerolinea> aerolineaOptional = db.getAerolineaRepository().obtenerPorId(id);
