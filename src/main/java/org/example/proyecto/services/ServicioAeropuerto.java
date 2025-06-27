@@ -1,12 +1,10 @@
 package org.example.proyecto.services;
 
 import org.example.proyecto.DBFake;
-import org.example.proyecto.model.entities.Aerolinea;
 import org.example.proyecto.model.entities.Aeropuerto;
 import org.example.proyecto.model.enums.Estatus;
 import org.example.proyecto.utils.ValidacionEstatus;
 import org.example.proyecto.utils.ValidacionesCadenas;
-import org.example.proyecto.utils.ValidacionesNumericas;
 ;
 import java.util.List;
 import java.util.Objects;
@@ -118,7 +116,7 @@ public class ServicioAeropuerto implements IServices {
     @Override
     public void eliminar() {
             listar();
-            System.out.println("INGRESA EL ID DE LA AEROLINEA");
+            System.out.println("INGRESA EL ID DE LA AEROPUERTO");
             while (!s.hasNextLong()){
                 System.out.println("ENTRADA INVALIDA, SOLO SE PERMITEN ENTEROS");
                 s.next();
@@ -126,14 +124,12 @@ public class ServicioAeropuerto implements IServices {
             }
             long id = s.nextLong();
 
-            //VALIDAR QUE NO EXISTAN AVIONES DENTRO DE ESA AEROLINEA
-            boolean vuelosExistentes = db.getVueloRepository().listar()
+            boolean aerolineaVinculada = db.getAerolineaRepository().listar()
                     .stream()
-                    .anyMatch(vl -> (Objects.equals(vl.getDestino().getId(), id)
-                            || Objects.equals(vl.getOrigen().getId(), id)));
+                    .anyMatch(al -> (Objects.equals(al.getId(), id)));
 
-            if (vuelosExistentes) {
-                System.out.println("NO SE PUEDE ELIMINAR EL AEROPUERTO YA QUE TIENE VUELOS RELACIONADOS");
+            if (aerolineaVinculada) {
+                System.out.println("NO SE PUEDE ELIMINAR EL AVION YA QUE TIENE VUELOS RELACIONADOS");
             }else {
                 db.getAeropuertoRepository().eliminar(id);
                 System.out.println("AEROPUERTO ELIMINADA EXITOSAMENTE");

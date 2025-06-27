@@ -2,6 +2,8 @@ package org.example.proyecto;
 
 import org.example.proyecto.services.ServicioAerolinea;
 import org.example.proyecto.services.ServicioAeropuerto;
+import org.example.proyecto.services.ServicioAvion;
+import org.example.proyecto.services.ServiciosVuelo;
 
 import java.util.Scanner;
 
@@ -19,6 +21,8 @@ public class Main {
         DBFake dbFake = new DBFake();
         ServicioAerolinea servicioAerolinea = new ServicioAerolinea(dbFake);
         ServicioAeropuerto servicioAeropuerto = new ServicioAeropuerto(dbFake);
+        ServiciosVuelo serviciosVuelo = new ServiciosVuelo(dbFake);
+        ServicioAvion servicioAvion = new ServicioAvion(dbFake);
 
         int opcion;
         do {
@@ -31,6 +35,8 @@ public class Main {
             switch (opcion){
                 case 1 -> servicioAerolinea.mostrarMenu();
                 case 2 -> servicioAeropuerto.mostrarMenu();
+                case 3 -> servicioAvion.mostrarMenu();
+                case 4 -> serviciosVuelo.mostrarMenu();
                 default -> System.out.println("OPCION NO VALIDA");
             }
 
