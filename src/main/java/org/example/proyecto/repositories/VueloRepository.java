@@ -55,9 +55,9 @@ public class VueloRepository implements IRepositories<Vuelo>{
         Optional<Vuelo> vueloOptional = obtenerPorId(id);
         if (vueloOptional.isPresent()){
             this.vuelos.remove(vueloOptional.get());
-            System.out.println("VUELO ELIMINADA EXITOSAMENTE");
+            System.out.println("VUELO ELIMINADO EXITOSAMENTE");
         }else {
-            System.out.println("ERROR: VUELO NO ENCONTRADA");
+            System.out.println("ERROR: VUELO NO ENCONTRADO");
         }
     }
 

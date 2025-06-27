@@ -10,6 +10,7 @@ import org.example.proyecto.model.enums.Estatus;
 import org.example.proyecto.utils.ValidacionEstatus;
 import org.example.proyecto.utils.ValidacionFecha;
 import org.example.proyecto.utils.ValidacionesCadenas;
+import org.example.proyecto.utils.ValidacionesNumericas;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
@@ -72,50 +73,37 @@ public class ServiciosVuelo implements IServices {
 
     @Override
     public void insertar() {
-        Vuelo vuelo = new Vuelo();
-
         s.nextLine();
-        String codigoVuelo = ValidacionesCadenas.validarCadenaVacia(s,
-                "INGRESA EL CODIGO DE VUELO");
-        vuelo.setCodigoVuelo(codigoVuelo);
+        String codigoVuelo = ValidacionesCadenas.validarCadenaVacia(s, "INGRESA EL CODIGO DE VUELO");
 
-        Avion avion = new Avion();
-
+        //VALIDACION DEL AVION
         System.out.println("SELECCIONA EL ID DEL AVION QUE DESEA");
-        long avionID = s.nextLong();
+        long avionID = ValidacionesNumericas.validarLongPosi(s);
         Optional<Avion> avionOptional = db.getAvionRepository().obtenerPorId(avionID);
-            //AVION
         if (avionOptional.isPresent()){
-            avion = avionOptional.get();
-            vuelo.setAvion(avion);
+            Avion avion = avionOptional.get();
 
-            System.out.println("SELECCIONA EL ID DEL AEROPUERTO DESTINO");
-            long aeropuertoID = s.nextLong();
-            Optional<Aeropuerto> aeropuertoOptional = db.getAeropuertoRepository().obtenerPorId(aeropuertoID);
-            Aeropuerto aeropuertoDestino = new Aeropuerto();
             //LUGAR DE DESTINO
-            if (aeropuertoOptional.isPresent()){
-                aeropuertoDestino = aeropuertoOptional.get();
-                vuelo.setDestino(aeropuertoDestino);
+            System.out.println("SELECCIONA EL ID DEL AEROPUERTO DESTINO");
+            long aeropuertoID = ValidacionesNumericas.validarLongPosi(s);
+            Optional<Aeropuerto> aeropuertoDestOpt = db.getAeropuertoRepository().obtenerPorId(aeropuertoID);
+            if (aeropuertoDestOpt.isPresent()){
+                Aeropuerto aeropuertoDestino = aeropuertoDestOpt.get();
 
+                //LUGAR DE DESTINO
                 System.out.println("SELECCIONA ID DEL AEROPUERTO ORIGEN");
-                long aeropuertoID2 = s.nextLong();
-                Optional<Aeropuerto> aeropuertoOptional2 = db.getAeropuertoRepository().obtenerPorId(aeropuertoID2);
-                Aeropuerto aeropuertoOrigen = new Aeropuerto();
-                //LUGAR DE ORIGEN
-                if (aeropuertoOptional2.isPresent() ){
-                    aeropuertoOrigen = aeropuertoOptional2.get();
-                    vuelo.setOrigen(aeropuertoOrigen);
+                long aeropuertoID2 = ValidacionesNumericas.validarLongPosi(s);
+                Optional<Aeropuerto> aeropuertoOritOpt = db.getAeropuertoRepository().obtenerPorId(aeropuertoID2);
+                if (aeropuertoOritOpt.isPresent() ){
+                    Aeropuerto aeropuertoOrigen = aeropuertoOritOpt.get();
+
                     //COMPARAR QUE NO SEA EL MISMO LUGAR
-                    if (aeropuertoDestino.getId().equals(aeropuertoOrigen.getId())){
-                        System.out.println("ERROR, No se puede guardar un VUELO con mismo destino y origen");
-                    }else {
+                    if (!(aeropuertoDestino.getId().equals(aeropuertoOrigen.getId()))){
                         s.nextLine();
                         LocalDate fechSalida = null;
                         do {
                             System.out.println("AGREGA LA FECHA DE SALIDA DEL VUELO (dd/mm/aaaa)");
                             String fecha = s.nextLine();
-
                             try {
                                 fechSalida = ValidacionFecha.validarFehaPosterior(fecha);
                             }catch (DateTimeParseException e){
@@ -125,149 +113,111 @@ public class ServiciosVuelo implements IServices {
                             }
                         }while (fechSalida == null);
 
-                        vuelo.setFechaSalida(fechSalida);
                         Estatus estatus = ValidacionEstatus.validacionEstatus(s);
 
+                        Vuelo vuelo = new Vuelo();
+                        vuelo.setCodigoVuelo(codigoVuelo);
+                        vuelo.setAvion(avion);
+                        vuelo.setDestino(aeropuertoOrigen);
+                        vuelo.setOrigen(aeropuertoOrigen);
+                        vuelo.setFechaSalida(fechSalida);
                         vuelo.setEstatus(estatus);
-                        System.out.println("LLEGO AL FINAL");
-                        System.out.println(vuelo.getCodigoVuelo());
-                        System.out.println(vuelo.getAvion());
-                        System.out.println(vuelo.getDestino().getNombre());
-                        System.out.println(vuelo.getEstatus());
-                        System.out.println(vuelo.getFechaSalida());
-                        System.out.println(vuelo.getOrigen());
 
                         db.getVueloRepository().insertar(vuelo);
+                    }else {
+                        System.out.println("ERROR, NO SE PUEDE REALIZAR UN VUELO DONDE EL ORIGENY EL DESTINO SEAN IGUALES");
                     }
-
+                } else {
+                    System.out.println("ERROR, NO SE ENCONTRO EL ID DEL AEROPUERTO ORIGEN");
                 }
             }else {
-                System.out.println("ERROR, NO SE EL ID DEL AEROPUERTO DESTINO");
+                System.out.println("ERROR, NO SE ENCONTRO EL ID DEL AEROPUERTO DESTINO");
             }
-
         }else {
             System.out.println("ERROR, NO SE ENCONTRO AL AVION");
         }
-
 
     }
 
     @Override
     public void actualizar() {
-        listar();
-        System.out.println("INGRESA EL ID DEL VUELO: ");
-
-        while (!s.hasNextLong()){
-            System.out.println("ENTRADA INVALIDA, SOLO SE PERMITEN ENTEROS");
-            s.next();
-            System.out.println("INGRESA EL ID DEL AEROPUERTO: ");
-        }
-        long id = s.nextLong();
-
-        Optional<Vuelo> vueloOptional = db.getVueloRepository().obtenerPorId(id);
-        if (vueloOptional.isPresent()) {
+        System.out.println("INGRESA EL ID DEL VUELO A MODIFICAR");
+        long idVuelo = ValidacionesNumericas.validarLongPosi(s);
+        Optional<Vuelo> vueloOpt = db.getVueloRepository().obtenerPorId(idVuelo);
+        if (vueloOpt.isPresent()){
             s.nextLine();
+            String codigoVuelo = ValidacionesCadenas.validarCadenaVacia(s, "INGRESA EL CODIGO DE VUELO");
 
-            Vuelo vueloDB = vueloOptional.get();
-
-            ServicioAvion servicioAvion = new ServicioAvion(this.db);
-
-            servicioAvion.listar();
-            s.nextLine();
-            String codigoVuelo = ValidacionesCadenas.validarCadenaVacia(s,
-                    "INGRESA EL CODIGO DE VUELO");
-
-            Avion avion = new Avion();
-
+            //VALIDACION DEL AVION
             System.out.println("SELECCIONA EL ID DEL AVION QUE DESEA");
-            long avionID = s.nextLong();
-            Optional<Avion> avionOptional = this.db.getAvionRepository().obtenerPorId(avionID);
-            //AVION
-            if (avionOptional.isPresent()) {
-                avion = avionOptional.get();
+            long avionID = ValidacionesNumericas.validarLongPosi(s);
+            Optional<Avion> avionOptional = db.getAvionRepository().obtenerPorId(avionID);
+            if (avionOptional.isPresent()){
+                Avion avion = avionOptional.get();
 
-                System.out.println("SELECCIONA EL ID DEL AEROPUERTO DESTINO");
-                long aeropuertoID = s.nextLong();
-                Optional<Aeropuerto> aeropuertoOptional = this.db.getAeropuertoRepository().obtenerPorId(aeropuertoID);
-
-                Aeropuerto aeropuertoDestino = new Aeropuerto();
                 //LUGAR DE DESTINO
-                if (aeropuertoOptional.isPresent()) {
-                    aeropuertoDestino = aeropuertoOptional.get();
+                System.out.println("SELECCIONA EL ID DEL AEROPUERTO DESTINO");
+                long aeropuertoID = ValidacionesNumericas.validarLongPosi(s);
+                Optional<Aeropuerto> aeropuertoDestOpt = db.getAeropuertoRepository().obtenerPorId(aeropuertoID);
+                if (aeropuertoDestOpt.isPresent()){
+                    Aeropuerto aeropuertoDestino = aeropuertoDestOpt.get();
 
+                    //LUGAR DE DESTINO
                     System.out.println("SELECCIONA ID DEL AEROPUERTO ORIGEN");
-                    long aeropuertoID2 = s.nextLong();
-                    Optional<Aeropuerto> aeropuertoOptional2 = db.getAeropuertoRepository().obtenerPorId(aeropuertoID2);
-                    Aeropuerto aeropuertoOrigen = null;
+                    long aeropuertoID2 = ValidacionesNumericas.validarLongPosi(s);
+                    Optional<Aeropuerto> aeropuertoOritOpt = db.getAeropuertoRepository().obtenerPorId(aeropuertoID2);
+                    if (aeropuertoOritOpt.isPresent() ){
+                        Aeropuerto aeropuertoOrigen = aeropuertoOritOpt.get();
 
-                    //LUGAR DE ORIGEN
-                    if (aeropuertoOptional2.isPresent()) {
-                        aeropuertoOrigen = aeropuertoOptional2.get();
                         //COMPARAR QUE NO SEA EL MISMO LUGAR
-                        if (aeropuertoDestino.getId().equals(aeropuertoOrigen.getId())) {
-                            System.out.println("ERROR, No se puede guardar un VUELO con mismo destino y origen");
-                        } else {
-
+                        if (!(aeropuertoDestino.getId().equals(aeropuertoOrigen.getId()))){
+                            s.nextLine();
                             LocalDate fechSalida = null;
                             do {
                                 System.out.println("AGREGA LA FECHA DE SALIDA DEL VUELO (dd/mm/aaaa)");
                                 String fecha = s.nextLine();
                                 try {
                                     fechSalida = ValidacionFecha.validarFehaPosterior(fecha);
-                                } catch (DateTimeParseException e) {
+                                }catch (DateTimeParseException e){
                                     System.out.println("EL FORMATO DE LA FECHA NO ES VALIDO, DEBE SER dd/MM/yyyy");
-                                } catch (FechaPosteriorExcepcion e) {
+                                }catch (FechaPosteriorExcepcion e){
                                     System.out.println(e.getMessage());
                                 }
-                            } while (fechSalida == null);
+                            }while (fechSalida == null);
 
                             Estatus estatus = ValidacionEstatus.validacionEstatus(s);
 
+                            Vuelo vueloDB = vueloOpt.get();
                             vueloDB.setCodigoVuelo(codigoVuelo);
                             vueloDB.setAvion(avion);
-                            vueloDB.setDestino(aeropuertoDestino);
+                            vueloDB.setDestino(aeropuertoOrigen);
                             vueloDB.setOrigen(aeropuertoOrigen);
                             vueloDB.setFechaSalida(fechSalida);
                             vueloDB.setEstatus(estatus);
 
                             db.getVueloRepository().editor(vueloDB);
+                        }else {
+                            System.out.println("ERROR, NO SE PUEDE REALIZAR UN VUELO DONDE EL ORIGENY EL DESTINO SEAN IGUALES");
                         }
+                    } else {
+                        System.out.println("ERROR, NO SE ENCONTRO EL ID DEL AEROPUERTO ORIGEN");
                     }
-                } else {
-                    System.out.println("ERROR, NO SE EL ID DEL AEROPUERTO DESTINO");
+                }else {
+                    System.out.println("ERROR, NO SE ENCONTRO EL ID DEL AEROPUERTO DESTINO");
                 }
-
-            } else {
+            }else {
                 System.out.println("ERROR, NO SE ENCONTRO AL AVION");
             }
+        }else {
+            System.out.println("NO SE ENCONTRO EL ID DEL VUELO");
         }
 
     }
 
     @Override
     public void eliminar() {
-        listar();
-        System.out.println("INGRESA EL ID DEL VUELO");
-        while (!s.hasNextLong()){
-            System.out.println("ENTRADA INVALIDA, SOLO SE PERMITEN ENTEROS");
-            s.next();
-            System.out.println("INGRESA EL ID DE LA VUELO: ");
-        }
-        long id = s.nextLong();
-        db.getAeropuertoRepository().eliminar(id);
-
-        System.out.println("SE PUEDE ELIMINAR EL VUELO YA QUE TIENE AEROLINAS  RELACIONADOS");
-
-//        boolean aeropuertoExistente = db.getAeropuertoRepository().listar()
-//                .stream()
-//                .anyMatch(ap -> (Objects.equals(ap.getId(), id)
-//                ));
-//
-//        if (aeropuertoExistente) {
-//            System.out.println("NO SE PUEDE ELIMINAR EL VUELO YA QUE TIENE AEROLINAS  RELACIONADOS");
-//        }else {
-//
-//            System.out.println("VUELO ELIMINADA EXITOSAMENTE");
-//        }
+        System.out.println("INGRESA EL ID DEL VUELO A ELIMINAR");
+        long idVuelo = ValidacionesNumericas.validarLongPosi(s);
+        db.getVueloRepository().eliminar(idVuelo);
     }
 }
