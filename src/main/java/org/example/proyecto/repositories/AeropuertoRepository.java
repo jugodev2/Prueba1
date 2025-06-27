@@ -37,7 +37,7 @@ public class AeropuertoRepository implements IRepositories<Aeropuerto> {
             aeropuertoDB.setPais(elemento.getPais());
             aeropuertoDB.setEstatus(elemento.getEstatus());
             aeropuertoDB.setLatitud(elemento.getLatitud());
-            aeropuertoDB.setLatitud(elemento.getLongitud());
+            aeropuertoDB.setLongitud(elemento.getLongitud());
 
             int index = this.aeropuertos.indexOf(aeropuertoDB);
             this.aeropuertos.set(index, aeropuertoDB);

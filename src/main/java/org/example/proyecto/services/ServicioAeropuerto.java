@@ -93,7 +93,6 @@ public class ServicioAeropuerto implements IServices {
         long id = ValidacionesNumericas.validarLongPosi(s);
         Optional<Aeropuerto> aeropuertoOptional = db.getAeropuertoRepository().obtenerPorId(id);
         if (aeropuertoOptional.isPresent()) {
-            s.nextLine();
         Aeropuerto aeropuertoDB = aeropuertoOptional.get();
         String nombre = ValidacionesCadenas.validarCadenaVacia(s, "INGRESA EL NOMBRE DEL AEROPUERTO");
         String latitud = ValidacionesCadenas.validarCadenaVacia(s, "INGRESA LA LATITUD");

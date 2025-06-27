@@ -1,7 +1,6 @@
 package org.example.proyecto.services;
 
 import org.example.proyecto.DBFake;
-import org.example.proyecto.exceptions.FechaAnteriorException;
 import org.example.proyecto.exceptions.FechaPosteriorExcepcion;
 import org.example.proyecto.model.entities.Aeropuerto;
 import org.example.proyecto.model.entities.Avion;
@@ -62,7 +61,7 @@ public class ServiciosVuelo implements IServices {
                             v.getId() + "\n" +
                             "Codigo: " + v.getCodigoVuelo() + "\n" +
                             "Avion: " + v.getAvion().getCodigoModelo() + "\n" +
-                            "Aeropuerto de Origen: " + v.getOrigen().getNombre() + "\n" +
+                            "Aeropuerto de Origen: " + v.getOrigen() + "\n" +
                             "Aeropuerto de Desstino: " + v.getDestino() + "\n" +
                             "Estatus: " + v.getEstatus().getEstatusEnum() + "\n"+
                             "Fecha de Salida: "+ v.getFechaSalida()
@@ -90,7 +89,7 @@ public class ServiciosVuelo implements IServices {
             if (aeropuertoDestOpt.isPresent()){
                 Aeropuerto aeropuertoDestino = aeropuertoDestOpt.get();
 
-                //LUGAR DE DESTINO
+                //LUGAR DE ORIGEN
                 System.out.println("SELECCIONA ID DEL AEROPUERTO ORIGEN");
                 long aeropuertoID2 = ValidacionesNumericas.validarLongPosi(s);
                 Optional<Aeropuerto> aeropuertoOritOpt = db.getAeropuertoRepository().obtenerPorId(aeropuertoID2);
@@ -99,7 +98,6 @@ public class ServiciosVuelo implements IServices {
 
                     //COMPARAR QUE NO SEA EL MISMO LUGAR
                     if (!(aeropuertoDestino.getId().equals(aeropuertoOrigen.getId()))){
-                        s.nextLine();
                         LocalDate fechSalida = null;
                         do {
                             System.out.println("AGREGA LA FECHA DE SALIDA DEL VUELO (dd/mm/aaaa)");
@@ -118,7 +116,7 @@ public class ServiciosVuelo implements IServices {
                         Vuelo vuelo = new Vuelo();
                         vuelo.setCodigoVuelo(codigoVuelo);
                         vuelo.setAvion(avion);
-                        vuelo.setDestino(aeropuertoOrigen);
+                        vuelo.setDestino(aeropuertoDestino);
                         vuelo.setOrigen(aeropuertoOrigen);
                         vuelo.setFechaSalida(fechSalida);
                         vuelo.setEstatus(estatus);
@@ -145,7 +143,6 @@ public class ServiciosVuelo implements IServices {
         long idVuelo = ValidacionesNumericas.validarLongPosi(s);
         Optional<Vuelo> vueloOpt = db.getVueloRepository().obtenerPorId(idVuelo);
         if (vueloOpt.isPresent()){
-            s.nextLine();
             String codigoVuelo = ValidacionesCadenas.validarCadenaVacia(s, "INGRESA EL CODIGO DE VUELO");
 
             //VALIDACION DEL AVION
@@ -162,7 +159,7 @@ public class ServiciosVuelo implements IServices {
                 if (aeropuertoDestOpt.isPresent()){
                     Aeropuerto aeropuertoDestino = aeropuertoDestOpt.get();
 
-                    //LUGAR DE DESTINO
+                    //LUGAR DE ORIGEN
                     System.out.println("SELECCIONA ID DEL AEROPUERTO ORIGEN");
                     long aeropuertoID2 = ValidacionesNumericas.validarLongPosi(s);
                     Optional<Aeropuerto> aeropuertoOritOpt = db.getAeropuertoRepository().obtenerPorId(aeropuertoID2);
@@ -171,7 +168,6 @@ public class ServiciosVuelo implements IServices {
 
                         //COMPARAR QUE NO SEA EL MISMO LUGAR
                         if (!(aeropuertoDestino.getId().equals(aeropuertoOrigen.getId()))){
-                            s.nextLine();
                             LocalDate fechSalida = null;
                             do {
                                 System.out.println("AGREGA LA FECHA DE SALIDA DEL VUELO (dd/mm/aaaa)");
@@ -190,7 +186,7 @@ public class ServiciosVuelo implements IServices {
                             Vuelo vueloDB = vueloOpt.get();
                             vueloDB.setCodigoVuelo(codigoVuelo);
                             vueloDB.setAvion(avion);
-                            vueloDB.setDestino(aeropuertoOrigen);
+                            vueloDB.setDestino(aeropuertoDestino);
                             vueloDB.setOrigen(aeropuertoOrigen);
                             vueloDB.setFechaSalida(fechSalida);
                             vueloDB.setEstatus(estatus);
