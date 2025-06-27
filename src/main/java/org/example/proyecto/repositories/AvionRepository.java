@@ -54,7 +54,7 @@ public class AvionRepository implements IRepositories<Avion>{
         Optional<Avion> avionOpt = obtenerPorId(id);
         if (avionOpt.isPresent()){
             this.avioness.remove(avionOpt.get());
-            System.out.println("AVION ELIMINADA EXITOSAMENTE");
+            System.out.println("AVION ELIMINADO EXITOSAMENTE");
         }else {
             System.out.println("ERROR: AVION NO ENCONTRADA");
         }

@@ -72,27 +72,19 @@ public class ServicioAvion  implements IServices{
 
     @Override
     public void insertar() {
-        ServicioAerolinea servicioAerolinea = new ServicioAerolinea(this.db);
-        servicioAerolinea.listar();
-
-        s.nextLine();
         System.out.println("INGRESA EL NUMERO DE REGISTRO DE VUELO");
-        Long numRegistro = s.nextLong();
-        s.nextLine();
-
+        Long numRegistro = ValidacionesNumericas.validarLongPosi(s);
         String tipo = ValidacionesCadenas.validarCadenaVacia(s, "INGRESA EL TIPO");
-
         String codModelo = ValidacionesCadenas.validarCadenaVacia(s, "INGRESA EL CODIGO DE MODELO");
-
-        System.out.println("INGRESA LA CAPACIDAD");
-        int capacidad = s.nextInt();
-
+//        System.out.println("INGRESA LA CAPACIDAD");
+//        int capacidad = s.nextInt();
+        int capacidad = ValidacionesNumericas.validarIntPosi(s, "INGRESA LA CAPACIDAD");
         //VALIDACION DE LA CAPACIDAD
-        while (capacidad <= 0) {
-            System.out.println("La capacidad debe ser un número positivo.");
-            capacidad = s.nextInt();
-        }
-        s.nextLine();
+//        while (capacidad <= 0) {
+//            System.out.println("La capacidad debe ser un número positivo.");
+//            capacidad = s.nextInt();
+//        }
+//        s.nextLine();
         LocalDate fechaPrimerVuelo = null;
         do {
             System.out.println("AGREGA LA FECHA DE PRIMER VUELO DEL AVION (dd/mm/aaaa)");
@@ -110,7 +102,7 @@ public class ServicioAvion  implements IServices{
         Estatus estatus = ValidacionEstatus.validacionEstatus(s);
         /// AEROLINEA
         System.out.println("SELECCIONA EL ID DE LA AEROLINEA");
-        long aeroID = ValidacionesNumericas.validarId(s,"AEROLINEA");
+        long aeroID = ValidacionesNumericas.validarLongPosi(s);
         //long aeroID = s.nextLong();
         Optional<Aerolinea> aerolineaOptional = this.db.getAerolineaRepository().obtenerPorId(aeroID);
         Aerolinea aerolinea;
@@ -122,7 +114,7 @@ public class ServicioAvion  implements IServices{
                     fechaPrimerVuelo, estatus, aerolinea);
             db.getAvionRepository().insertar(avionSave);
         }else {
-            System.out.println("NO SE PUDO AGREGAR LA AEROLINEA, ESTA NO EXISTE");
+            System.out.println("NO SE AGREGO EL AVION: LA AEROLINEA NO EXISTE");
         }
 
     }
@@ -183,14 +175,15 @@ public class ServicioAvion  implements IServices{
 
     @Override
     public void eliminar() {
-        listar();
-        System.out.println("INGRESA EL ID DEL AVION");
-        while (!s.hasNextLong()){
-            System.out.println("ENTRADA INVALIDA, SOLO SE PERMITEN ENTEROS");
-            s.next();
-            System.out.println("INGRESA EL ID DE LA AEROLINEA: ");
-        }
-        long id = s.nextLong();
+//        listar();
+//        System.out.println("INGRESA EL ID DEL AVION");
+//        while (!s.hasNextLong()){
+//            System.out.println("ENTRADA INVALIDA, SOLO SE PERMITEN ENTEROS");
+//            s.next();
+//            System.out.println("INGRESA EL ID DE LA AEROLINEA: ");
+//        }
+//        long id = s.nextLong();
+        long id = ValidacionesNumericas.validarLongPosi(s);
 
         boolean vuelosExistentes = db.getVueloRepository().listar()
                 .stream()
@@ -201,7 +194,6 @@ public class ServicioAvion  implements IServices{
             System.out.println("NO SE PUEDE ELIMINAR EL AVION YA QUE TIENE AEROLINEAS RELACIONADOS");
         }else {
             db.getAeropuertoRepository().eliminar(id);
-            System.out.println("AVION ELIMINADA EXITOSAMENTE");
         }
     }
 }

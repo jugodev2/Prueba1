@@ -89,7 +89,8 @@ public class ServicioAeropuerto implements IServices {
 //        }
         //long id = s.nextLong();
         //listar();
-        long id = ValidacionesNumericas.validarId(s, "AEROPUERTO");
+        System.out.println("INGRESA EL ID DE AEROPUERTO");
+        long id = ValidacionesNumericas.validarLongPosi(s);
         Optional<Aeropuerto> aeropuertoOptional = db.getAeropuertoRepository().obtenerPorId(id);
         if (aeropuertoOptional.isPresent()) {
             s.nextLine();
@@ -116,7 +117,8 @@ public class ServicioAeropuerto implements IServices {
     @Override
     public void eliminar() {
         listar();
-        long id = ValidacionesNumericas.validarId(s, "AEROPUERTO");
+        System.out.println("INGRESA EL ID DE AEROPUERTO");
+        long id = ValidacionesNumericas.validarLongPosi(s);
 
             boolean vuelosVinlados = db.getVueloRepository().listar()
                     .stream()
