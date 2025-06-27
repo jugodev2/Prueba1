@@ -11,7 +11,7 @@ public class Califiaciones {
         int opcion ;
 
         double[] calificaciones = new double[5];
-
+//EN EL SWITCH ORIGINAL SOLO SE USA EL BREAK
         do {
             System.out.println("-------MENU---------");
             System.out.println("1.- Agregar condiciones ");
@@ -26,7 +26,13 @@ public class Califiaciones {
                     int cont = 0;
                     while (cont < calificaciones.length) {
                         System.out.println("Ingrese el las calificacion");
+                        if (!s.hasNextDouble()){
+                            System.out.println("Ingrese un valor valido");
+                            s.next();
+                            return;
+                        }
                         double cal = s.nextDouble();
+
                         if (cal <= 10.00d && cal >= 0.0) {
                             calificaciones[cont] = cal;
                             cont++;
