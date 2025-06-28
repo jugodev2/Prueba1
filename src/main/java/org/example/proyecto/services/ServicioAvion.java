@@ -186,6 +186,7 @@ public class ServicioAvion  implements IServices{
                 System.out.println("NO SE PUEDE ELIMINAR EL AVION YA QUE TIENE VUELOS RELACIONADOS");
             }else {
                 db.getAvionRepository().eliminar(id);
+
             }
         }else {
             System.out.println("AVION NO ENCONTRADO");
