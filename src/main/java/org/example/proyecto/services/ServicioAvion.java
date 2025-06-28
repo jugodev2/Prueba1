@@ -178,14 +178,14 @@ public class ServicioAvion  implements IServices{
         if (avionOptional.isPresent()){
             Avion avion = avionOptional.get();
 
-            boolean aerolinaExistente = db.getAerolineaRepository().listar()
+            boolean vuelosExitentes = db.getVueloRepository().listar()
                     .stream()
-                    .anyMatch(ae -> (Objects.equals(ae.getId(), avion.getAerolinea().getId())));
+                    .anyMatch(vl -> (Objects.equals(vl.getId(), avion.getId())));
 
-            if (aerolinaExistente) {
-                System.out.println("NO SE PUEDE ELIMINAR EL AVION YA QUE TIENE AEROLINEAS RELACIONADOS");
+            if (vuelosExitentes) {
+                System.out.println("NO SE PUEDE ELIMINAR EL AVION YA QUE TIENE VUELOS RELACIONADOS");
             }else {
-                db.getAeropuertoRepository().eliminar(id);
+                db.getAvionRepository().eliminar(id);
             }
         }else {
             System.out.println("AVION NO ENCONTRADO");
