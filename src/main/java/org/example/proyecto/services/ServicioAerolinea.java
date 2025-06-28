@@ -3,7 +3,6 @@ package org.example.proyecto.services;
 import org.example.proyecto.DBFake;
 import org.example.proyecto.exceptions.FechaAnteriorException;
 import org.example.proyecto.model.entities.Aerolinea;
-import org.example.proyecto.model.entities.Avion;
 import org.example.proyecto.model.enums.Estatus;
 import org.example.proyecto.utils.ValidacionEstatus;
 import org.example.proyecto.utils.ValidacionFecha;
@@ -40,8 +39,8 @@ public class ServicioAerolinea implements IServices{
             System.out.println("5- VOLVER AL MENU PRINCIPAL");
 
             while (!s.hasNextInt()){
+                System.out.println("INGRESE UN ENTERO");
                 s.next();
-                System.out.println("INGRESE UNA OPCION VALIDA");
             }
             opcion = s.nextInt();
             switch (opcion){
