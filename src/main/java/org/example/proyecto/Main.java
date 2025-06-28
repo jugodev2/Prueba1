@@ -28,8 +28,8 @@ public class Main {
         do {
             mostrarMenu();
             while (!s.hasNextInt()){
+                System.out.println("INGRESE UN ENTERO");
                 s.next();
-                System.out.println("INGRESE UNA OPCION VALIDA");
             }
             opcion = s.nextInt();
             switch (opcion){

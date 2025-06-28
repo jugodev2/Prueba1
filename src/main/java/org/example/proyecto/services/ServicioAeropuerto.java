@@ -34,6 +34,10 @@ public class ServicioAeropuerto implements IServices {
             System.out.println("3- EDITAR AEROPUERTO");
             System.out.println("4- ELIMINAR AEROPUERTO");
             System.out.println("5- VOLVER AL MENU PRINCIPAL");
+            while (!s.hasNextInt()){
+                System.out.println("INGRESE UN ENTERO");
+                s.next();
+            }
             opcion = s.nextInt();
             switch (opcion){
                 case 1 -> listar();
